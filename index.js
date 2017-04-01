@@ -12,7 +12,7 @@ app.post("/message", function (request, response) {
     console.log("In numbers");
   } else {
     console.log("not in numbers");
-    numbers[request.body.From].push([]);
+    numbers[request.body.From] = [];
   }
   response.send("<Response><Message>Hello</Message></Response>")
 });
