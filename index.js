@@ -18,15 +18,14 @@ app.post("/message", function (request, response) {
       response.send("<Response><Message>What is the reason for your visit?</Message></Response>")
     } else if (numbers[request.body.From]["reason"] == '') {
       numbers[request.body.From]["reason"] = request.body.Body;
-      response.send("<Response><Message>Great! Please proceed to security with this QR Code</Message></Response>")
-      response.send("<Response><Message>https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://vizitr.herokuapp.com/security/" + [request.body.From]["first"] + "/" + [request.body.From]["last"] + "/" + [request.body.From]["reason"] + "</Message></Response>")
+      response.send("<Response><Message>Great! Please proceed to security with this QR Code: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://vizitr.herokuapp.com/security/" + [request.body.From]["first"] + "/" + [request.body.From]["last"] + "/" + [request.body.From]["reason"] + "</Message></Response>")
     }
     console.log(numbers[request.body.From]);
   } else {
     console.log("Not in numbers");
     numbers[request.body.From] = {
-      "first": '',
-      "last": '',
+      "first": 'Ayush',
+      "last": 'Goyal',
       "reason": ''
     };
     console.log(numbers[request.body.From]);
