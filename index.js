@@ -8,12 +8,12 @@ app.use(bodyParser.urlencoded({
 
 app.post("/message", function (request, response) {
   console.log(request.body);
-  if (request.body.from in numbers) {
+  if (request.body.From in numbers) {
     console.log("In numbers");
   } else {
     console.log("not in numbers");
     numbers.push({
-      key: request.body.from,
+      key: request.body.From,
       value: []
     });
   }
