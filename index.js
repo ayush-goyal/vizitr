@@ -19,6 +19,7 @@ app.post("/message", function (request, response) {
     } else if (numbers[request.body.From]["reason"] == '') {
       numbers[request.body.From]["reason"] = request.body.Body;
       response.send("<Response><Message>Great! Please proceed to security with this QR Code</Message></Response>")
+      response.send("<Response><Message>https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://vizitr.herokuapp.com/security/" + [request.body.From]["first"] + "/" + [request.body.From]["last"] + "/" + [request.body.From]["reason"] + "</Message></Response>")
     }
     console.log(numbers[request.body.From]);
   } else {
@@ -32,6 +33,9 @@ app.post("/message", function (request, response) {
     response.send("<Response><Message>What is your first name?</Message></Response>")
   }
   response.send("<Response><Message>Hello</Message></Response>")
+});
+app.get("/security/:first/:last/:reason", function (request, response) {
+  res.send(req.params);
 });
 
 app.get("/", function (request, response) {
