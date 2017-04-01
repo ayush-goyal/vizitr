@@ -4,8 +4,16 @@
   "description": "A visitor logging app",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
-  "author": "",
-  "license": "MIT"
+  "author": "Ayush Goyal",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "mongoose": "^4.9.2",
+    "morgan": "^1.8.1",
+    "twilio": "^2.11.1"
+  }
 }
