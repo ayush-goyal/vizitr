@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
-var numbers = [];
+var numbers = {};
 app.use(bodyParser.urlencoded({
   extended: false
 }));
@@ -12,10 +12,7 @@ app.post("/message", function (request, response) {
     console.log("In numbers");
   } else {
     console.log("not in numbers");
-    numbers.push({
-      key: request.body.From,
-      value: []
-    });
+    numbers[request.body.From].push([]);
   }
   response.send("<Response><Message>Hello</Message></Response>")
 });
