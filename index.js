@@ -1,12 +1,22 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+var numbers = [];
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 
 app.post("/message", function (request, response) {
   console.log(request.body);
+  if (request.body.from in numbers) {
+    console.log("In numbers");
+  } else {
+    console.log("not in numbers");
+    numbers.push({
+      key: request.body.from,
+      value: []
+    });
+  }
   response.send("<Response><Message>Hello</Message></Response>")
 });
 
