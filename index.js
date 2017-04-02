@@ -4,7 +4,8 @@ var http = require('http'),
   express = require('express'),
   twilio = require('twilio'),
   firebase = require("firebase"),
-  bodyParser = require('body-parser');
+  bodyParser = require('body-parser'),
+  errorHandler = require('express-error-handler')
 
 // Load configuration information from system environment variables.
 var TWILIO_ACCOUNT_SID = "AC0ee9085bf027984dc427585a54173f39",
@@ -30,7 +31,9 @@ function initializeNewNumber(number, firstName) {
   firebase.database().ref('/numbers/' + number).set({
     first: firstName, //initialize first name from first message sent
     last: '',
-    reason: ''
+    reason: '',
+    timein: '',
+    timeout: ''
   });
 }
 
@@ -44,6 +47,7 @@ function addData(exists, number, body, response, snapshot) {
       response.send("<Response><Message>What is the reason for your visit?</Message></Response>");
     } else if (snapshot.reason == '') {
       firebase.database().ref('/numbers/' + number + '/reason').set(body);
+      firebase.database().ref('/numbers/' + number + '/timein').set(new Date().getTime());
       console.log("in reason");
       response.send("<Response><Message>Great! Please proceed to security with this QR Code: http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/" + encodeURIComponent(snapshot.first) + "/" + encodeURIComponent(snapshot.last) + "/" + encodeURIComponent(body) + "</Message></Response>")
     } else {
@@ -75,15 +79,23 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+app.use(function (err, req, res, next) {
+  console.log(err);
+  next(err);
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // render our home page
-app.get('/', function (request, response) {
-  response.sendFile(__dirname + '/views/index.html');
+app.get('/', function (req, res) {
+  var name = 'Ayush';
+  res.render(__dirname + '/views/index');
 });
 
+app.get('/dashboard', function (req, res) {
+  var name = 'Ayush';
+  res.render(__dirname + '/views/dashboard');
+});
 // handle a POST request to send a text message.  This is sent via ajax on our
 // home page
 
