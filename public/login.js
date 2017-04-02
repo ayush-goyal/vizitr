@@ -4,7 +4,7 @@ $(document).ready(function () {
 });
 
 
-var email, password;
+/*var email, password;
 
 document.getElementById('btn-signin').onclick = function () {
   email = document.getElementById('input-email').value;
@@ -32,4 +32,12 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     location.href = "/dashboard"
   }
-});
+});*/
+
+document.getElementById('btn-signin').onclick = function () {
+  location.href = "/dashboard";
+}
+
+document.getElementById('btn-signup').onclick = function () {
+  location.href = "/dashboard";
+}

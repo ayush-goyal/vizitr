@@ -49,7 +49,7 @@ function drawTable() {
       inBuilding = false;
       timeOut = new Date(numbers[number].timeout).toLocaleString().toString();
     }
-    data.addRow([numbers[number].first, numbers[number].last, phoneNumber, numbers[number].reason, timeIn, '<a href="/hello">Hello</a>', inBuilding]);
+    data.addRow([numbers[number].first, numbers[number].last, phoneNumber, numbers[number].reason, timeIn, timeOut, inBuilding]);
   }
 
   console.log("done");

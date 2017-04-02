@@ -162,6 +162,17 @@ app.get('/request/first/:number', function (request, response) {
     response.send(snapshot.val().first);
   });
 });
+
+app.get('/addvisitor/:number/:first/:last', function (request, response) {
+  firebase.database().ref('/numbers/' + request.params["number"]).set({
+    first: request.params["first"],
+    last: request.params["last"],
+    reason: '',
+    timein: Date.now(),
+    timeout: ''
+  });
+  response.send("Visitor Added");
+});
 /*
 var listener = app.listen(3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
