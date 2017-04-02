@@ -47,9 +47,19 @@ function sendFollowUpQR(number) {
     console.log(err);
     console.log('Message is inbound!');
   });
-
 }
 
+function sayGoodbye(number) {
+  client.sendSms({
+    to: number,
+    from: TWILIO_NUMBER,
+    body: 'Thank you for visiting!'
+  }, function (err, data) {
+    // When we get a response from Twilio, respond to the HTTP POST request
+    console.log(err);
+    console.log('Message is inbound!');
+  });
+}
 
 function initializeNewNumber(number, firstName) {
   firebase.database().ref('/numbers/' + number).set({
@@ -170,12 +180,16 @@ app.get('/number/:number', function (request, response) {
 app.get('/security/:number', function (request, response) {
   firebase.database().ref('/numbers/' + request.params["number"] + '/timein').set(new Date().getTime());
   sendFollowUpQR(request.params["number"]);
-  response.redirect('/dashboard');
+  //window.alert("Successful sign in");
+  response.send("<script>alert('Successful sign in'); window.location.href = '/dashboard';</script>")
+  //response.redirect('/dashboard');
 });
 
 app.get('/security/signout/:number', function (request, response) {
   firebase.database().ref('/numbers/' + request.params["number"] + '/timeout').set(new Date().getTime());
-  response.redirect('/dashboard');
+  sayGoodbye(request.params["number"]);
+  response.send("<script>alert('Successful sign out');  window.location.href = '/dashboard';</script>")
+  //response.redirect('/dashboard');
 });
 
 app.get('/checknumber/:number', function (request, response) {
@@ -186,11 +200,21 @@ app.get('/sendcode/:number', function (request, response) {
   client.sendSms({
     to: request.params["number"],
     from: TWILIO_NUMBER,
+    body: 'You have already filled out the form. Use the following QR Code to sign in: '
+  }, function (err, data) {
+    // When we get a response from Twilio, respond to the HTTP POST request
+    console.log(err);
+    console.log('Message is inbound!');
+  });
+  client.sendSms({
+    to: request.params["number"],
+    from: TWILIO_NUMBER,
     body: 'http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/' + request.params["number"]
   }, function (err, data) {
     // When we get a response from Twilio, respond to the HTTP POST request
     console.log(err);
     console.log('Message is inbound!');
+    response.send("Success in sending QR Code")
   });
 });
 
