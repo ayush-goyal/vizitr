@@ -28,6 +28,29 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var numberData;
 
+function sendFollowUpQR(number) {
+  client.sendSms({
+    to: number,
+    from: TWILIO_NUMBER,
+    body: 'Welcome! Please use the following QR Code when signing out:'
+  }, function (err, data) {
+    // When we get a response from Twilio, respond to the HTTP POST request
+    console.log(err);
+    console.log('Message is inbound!');
+  });
+  client.sendSms({
+    to: number,
+    from: TWILIO_NUMBER,
+    body: 'http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/signout/' + number
+  }, function (err, data) {
+    // When we get a response from Twilio, respond to the HTTP POST request
+    console.log(err);
+    console.log('Message is inbound!');
+  });
+
+}
+
+
 function initializeNewNumber(number, firstName) {
   firebase.database().ref('/numbers/' + number).set({
     first: firstName, //initialize first name from first message sent
@@ -39,6 +62,7 @@ function initializeNewNumber(number, firstName) {
 }
 
 function addData(exists, number, body, response, snapshot) {
+  console.log("in add data");
   if (exists) {
     console.log('user ' + number + ' exists!');
     if (snapshot.last == '') {
@@ -49,7 +73,7 @@ function addData(exists, number, body, response, snapshot) {
     } else if (snapshot.reason == '') {
       firebase.database().ref('/numbers/' + number + '/reason').set(body);
       console.log("in reason");
-      response.send("<Response><Message>Great! Please proceed to security with this QR Code: http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/" + encodeURIComponent(snapshot.first) + "/" + encodeURIComponent(snapshot.last) + "/" + encodeURIComponent(body) + "</Message></Response>");
+      response.send("<Response><Message>Great! Please proceed to security with this QR Code: http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/" + number + "</Message></Response>");
     } else {
       response.send("<Response><Message>Your information has already been filled out.</Message></Response>");
     }
@@ -145,6 +169,7 @@ app.get('/number/:number', function (request, response) {
 
 app.get('/security/:number', function (request, response) {
   firebase.database().ref('/numbers/' + request.params["number"] + '/timein').set(new Date().getTime());
+  sendFollowUpQR(request.params["number"]);
   response.redirect('/dashboard');
 });
 
@@ -155,6 +180,18 @@ app.get('/security/signout/:number', function (request, response) {
 
 app.get('/checknumber/:number', function (request, response) {
   checkIfUserExists(request.params["number"], response);
+});
+
+app.get('/sendcode/:number', function (request, response) {
+  client.sendSms({
+    to: request.params["number"],
+    from: TWILIO_NUMBER,
+    body: 'http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/' + request.params["number"]
+  }, function (err, data) {
+    // When we get a response from Twilio, respond to the HTTP POST request
+    console.log(err);
+    console.log('Message is inbound!');
+  });
 });
 
 app.get('/request/first/:number', function (request, response) {
