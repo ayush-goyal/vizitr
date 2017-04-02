@@ -54,18 +54,18 @@ td {
   margin: 20px 0px 20px 0px;
 }
 
-#login-h1 {
-  font-size: 1.5em;
-  color: #525252;
-}
-
 #login-box {
   background: white;
   width: 300px;
   border-radius: 6px;
-  margin: 0 auto 0 auto;
+  margin: 75px auto 0 auto;
   padding: 0px 0px 70px 0px;
   border: #2980b9 4px solid;
+}
+
+#login-h1 {
+  font-size: 1.5em;
+  color: #525252;
 }
 
 .login-input {
@@ -80,7 +80,7 @@ td {
   border-radius: 4px;
 }
 
-#btn1 {
+#btn-signin {
   background: #2ecc71;
   width: 125px;
   padding-top: 5px;
@@ -96,11 +96,11 @@ td {
   font-size: 0.8em;
 }
 
-#btn1:hover {
+#btn-signin:hover {
   background: #2CC06B;
 }
 
-#btn2 {
+#btn-signup {
   float: left;
   background: #3498db;
   width: 125px;
@@ -116,7 +116,7 @@ td {
   font-size: 0.8em;
 }
 
-#btn2:hover {
+#btn-signup:hover {
   background: #3594D2;
 }
 
@@ -126,6 +126,7 @@ td {
   color: #ffffff;
 }
 
-#forgot-password-login-p > span {
+#forgot-password-login-p>a {
   color: #f1c40f;
+  text-decoration: underline;
 }

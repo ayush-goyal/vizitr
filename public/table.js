@@ -26,13 +26,22 @@ function drawTable() {
 
 
   table = new google.visualization.Table(document.getElementById('table_div'));
-
-  var phoneNumber, inBuilding, timeOut;
+  data.setColumnProperty(0, {
+    allowHTML: true
+  });
+  var phoneNumber, inBuilding, timeIn, timeOut;
   for (var number in numbers) {
     phoneNumber = number;
     if (phoneNumber.charAt(0) == '+') {
-      phoneNumber = '(' + number.substr(2, 3) + ')-' + number.substr(5, 3) + '-' + number.substr(8, 3);
+      phoneNumber = '(' + number.substr(2, 3) + ')-' + number.substr(5, 3) + '-' + number.substr(8, 4);
     }
+
+    if (numbers[number].timein == '') {
+      timeIn = '';
+    } else {
+      timeIn = new Date(numbers[number].timein).toLocaleString().toString();
+    }
+
     if (numbers[number].timeout == '') {
       inBuilding = true;
       timeOut = '';
@@ -40,14 +49,15 @@ function drawTable() {
       inBuilding = false;
       timeOut = new Date(numbers[number].timeout).toLocaleString().toString();
     }
-    data.addRow([numbers[number].first, numbers[number].last, phoneNumber, numbers[number].reason, new Date(numbers[number].timein).toLocaleString().toString(), timeOut, inBuilding]);
+    data.addRow([numbers[number].first, numbers[number].last, phoneNumber, numbers[number].reason, timeIn, '<a href="/hello">Hello</a>', inBuilding]);
   }
 
   console.log("done");
   table.draw(data, {
     showRowNumber: true,
     width: '100%',
-    height: '100%'
+    height: '100%',
+    allowHTML: true
   })
 }
 

@@ -5,7 +5,8 @@ var http = require('http'),
   twilio = require('twilio'),
   firebase = require("firebase"),
   bodyParser = require('body-parser'),
-  errorHandler = require('express-error-handler')
+  errorHandler = require('express-error-handler'),
+  cors = require('cors');
 
 // Load configuration information from system environment variables.
 var TWILIO_ACCOUNT_SID = "AC0ee9085bf027984dc427585a54173f39",
@@ -47,9 +48,8 @@ function addData(exists, number, body, response, snapshot) {
       response.send("<Response><Message>What is the reason for your visit?</Message></Response>");
     } else if (snapshot.reason == '') {
       firebase.database().ref('/numbers/' + number + '/reason').set(body);
-      firebase.database().ref('/numbers/' + number + '/timein').set(new Date().getTime());
       console.log("in reason");
-      response.send("<Response><Message>Great! Please proceed to security with this QR Code: http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/" + encodeURIComponent(snapshot.first) + "/" + encodeURIComponent(snapshot.last) + "/" + encodeURIComponent(body) + "</Message></Response>")
+      response.send("<Response><Message>Great! Please proceed to security with this QR Code: http://qrickit.com/api/qr.php?d=https://vizitr.herokuapp.com/security/" + encodeURIComponent(snapshot.first) + "/" + encodeURIComponent(snapshot.last) + "/" + encodeURIComponent(body) + "</Message></Response>");
     } else {
       response.send("<Response><Message>Your information has already been filled out.</Message></Response>");
     }
@@ -68,6 +68,30 @@ function checkForFirstTime(number, body, response) {
     addData(exists, number, body, response, snapshot.val());
   });
 }
+
+function userExistsCallback(number, exists) {
+  if (exists) {
+    return "True";
+  } else {
+    return "False";
+  }
+}
+// Tests to see if /users/<userId> has any data. 
+function checkIfUserExists(number, response) {
+  var usersRef = firebase.database().ref('/numbers');
+  usersRef.child(number).once('value', function (snapshot) {
+    var exists = (snapshot.val() !== null);
+    response.send(userExistsCallback(number, exists));
+  });
+}
+/*function checkIfUserExists(number) {
+  console.log(number);
+  firebase.database().ref('/numbers/' + number).once('value').then(function (snapshot) {
+    //var exists = ();
+    return (snapshot.val() !== null);
+    //return exists;
+  })
+}*/
 
 // Create an Express web application with some basic configuration
 var app = express();
@@ -92,6 +116,9 @@ app.get('/', function (req, res) {
   res.render(__dirname + '/views/index');
 });
 
+var writeTrainDataRoute = require('./routes/writeTrainData');
+app.post('/writeTrainData', cors(), writeTrainDataRoute.writeTrainData);
+
 app.get('/dashboard', function (req, res) {
   var name = 'Ayush';
   res.render(__dirname + '/views/dashboard');
@@ -113,6 +140,26 @@ app.get('/number/:number', function (request, response) {
   }, function (err, data) {
     // When we get a response from Twilio, respond to the HTTP POST request
     response.send('Message is inbound!');
+  });
+});
+
+app.get('/security/:number', function (request, response) {
+  firebase.database().ref('/numbers/' + request.params["number"] + '/timein').set(new Date().getTime());
+  response.redirect('/dashboard');
+});
+
+app.get('/security/signout/:number', function (request, response) {
+  firebase.database().ref('/numbers/' + request.params["number"] + '/timeout').set(new Date().getTime());
+  response.redirect('/dashboard');
+});
+
+app.get('/checknumber/:number', function (request, response) {
+  checkIfUserExists(request.params["number"], response);
+});
+
+app.get('/request/first/:number', function (request, response) {
+  firebase.database().ref('/numbers/' + request.params["number"]).once('value').then(function (snapshot) {
+    response.send(snapshot.val().first);
   });
 });
 /*
